@@ -7,6 +7,6 @@ export const typeOrmConfig:TypeOrmModuleOptions = {
     username: 'root',
     password: 'e-Ejx.]NtEQNgc.z',
     database: 'taskd',
-    entities: [__dirname+ '/../**/*.entity.ts'],
+    "entities": ["dist/**/*.entity{.ts,.js}"],
     synchronize: true,
 }
