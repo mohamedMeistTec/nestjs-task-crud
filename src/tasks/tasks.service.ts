@@ -57,6 +57,7 @@ export class TasksService {
         // // you can use this line or the second line to delte task by id 
 
         // return this.tasks.splice(this.tasks.findIndex(value => value.id === id ),1) ? 'true' : 'false';
-        this.tasks = this.tasks.filter(task => task.id === id);
+        const found = this.getTaskById(id);
+        this.tasks = this.tasks.filter(task => task.id === found.id);
     }
 }

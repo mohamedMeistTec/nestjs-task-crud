@@ -1,0 +1,3 @@
+pipes module >> 
+start using custom pipes to validate status using task-status-validation pipe and use it inside 
+ @Body('status', TaskStatusValidationPipe) 
