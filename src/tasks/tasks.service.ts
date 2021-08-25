@@ -3,15 +3,25 @@ https://docs.nestjs.com/providers#services
 */
 
 import { Injectable, NotFoundException } from '@nestjs/common';
- import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { v4 as uuidv4 } from 'uuid';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { Task } from './task.entity';
 import { TaskStatus } from './task.enum';
+import { TaskRepository } from './task.repository';
 
 @Injectable()
 export class TasksService {
- 
+    constructor(
+        @InjectRepository(TaskRepository)
+        private taskRepository: TaskRepository,
+    ) {
+
+    }
+
+
+
     // getAllTasks(): Task[] {
     //     return this.tasks;
     // }
@@ -30,6 +40,14 @@ export class TasksService {
     //     }
     //     return tasks;
     // }
+
+   async getTaskById(id:number):Promise<Task>{
+        const existTask = await this.taskRepository.findOne(id)
+               if (!existTask) {
+            throw new NotFoundException('task not found');
+        }
+        return existTask;
+    }
     // getTaskById(id: string): Task {
     //     const existTask = this.tasks.find(value => value.id === id);
     //     if (!existTask) {

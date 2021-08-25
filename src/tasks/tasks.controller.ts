@@ -2,7 +2,7 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { ParseIntPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
@@ -28,10 +28,10 @@ export class TasksController {
     //     return this.tasksService.getTasksByFilter(filterDto);
     // }
 
-    // @Get('/find/entityId=:id')
-    // getTaskById(@Param('id') id: string): Task {
-    //     return this.tasksService.getTaskById(id);
-    // }
+    @Get('/find/entityId=:id')
+    getTaskById(@Param('id',ParseIntPipe) id: number): Promise<Task> {
+        return this.tasksService.getTaskById(id);
+    }
     // @Post()
     // @UsePipes(ValidationPipe)
     // createTask(
