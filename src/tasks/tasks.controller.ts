@@ -6,6 +6,8 @@ import { ParseIntPipe, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { PaginationDto } from './dto/paginate.dto';
+import { TaskPaginateDto } from './dto/task-paginate.dto';
 import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
 import { Task } from './task.entity';
 import { TaskStatus } from './task.enum';
@@ -16,12 +18,20 @@ import { TasksService } from './tasks.service';
 export class TasksController {
     constructor(private tasksService: TasksService) {
     }
-
     @Get('listAll')
-    getAllTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto) {
+    getAllTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Promise<TaskPaginateDto> {
         console.log('list from controller ', filterDto)
         return this.tasksService.getTasks(filterDto);
     }
+// @Get('list')
+//     getTaskPagination(@Query() paginationDto:PaginationDto ):Promise<TaskPaginateDto>{
+
+// paginationDto.limit = Number(paginationDto.limit)
+// paginationDto.page = Number(paginationDto.page)
+
+//         return this.tasksService.
+
+//     }
 
     // @Get()
     // getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[] {

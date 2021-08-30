@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { TaskPaginateDto } from './dto/task-paginate.dto';
 import { Task } from './task.entity';
 import { TaskStatus } from './task.enum';
 import { TaskRepository } from './task.repository';
@@ -55,12 +56,15 @@ export class TasksService {
     //     }
     //     return existTask;
     // }
-    async getTasks(filter:GetTasksFilterDto): Promise<Task[]> {
+    async getTasks(filter:GetTasksFilterDto): Promise<TaskPaginateDto> {
         
         console.log('list from service',filter)
         return this.taskRepository.getTasks(filter);
     }
 
+    // getPaginateTask(){
+    //     return this.taskRepository.getTasks()
+    // }
     async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
         return this.taskRepository.createTask(createTaskDto);
 
