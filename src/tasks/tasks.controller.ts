@@ -2,8 +2,11 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { ParseIntPipe, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ParseIntPipe, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { PaginationDto } from './dto/paginate.dto';
@@ -15,23 +18,26 @@ import { TaskStatus } from './task.enum';
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
     constructor(private tasksService: TasksService) {
     }
     @Get('listAll')
-    getAllTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Promise<TaskPaginateDto> {
+    getAllTasks(
+        @Query(ValidationPipe) filterDto: GetTasksFilterDto,
+    ): Promise<TaskPaginateDto> {
         console.log('list from controller ', filterDto)
         return this.tasksService.getTasks(filterDto);
     }
-// @Get('list')
-//     getTaskPagination(@Query() paginationDto:PaginationDto ):Promise<TaskPaginateDto>{
+    // @Get('list')
+    //     getTaskPagination(@Query() paginationDto:PaginationDto ):Promise<TaskPaginateDto>{
 
-// paginationDto.limit = Number(paginationDto.limit)
-// paginationDto.page = Number(paginationDto.page)
+    // paginationDto.limit = Number(paginationDto.limit)
+    // paginationDto.page = Number(paginationDto.page)
 
-//         return this.tasksService.
+    //         return this.tasksService.
 
-//     }
+    //     }
 
     // @Get()
     // getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[] {
@@ -43,12 +49,13 @@ export class TasksController {
     getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
         return this.tasksService.getTaskById(id);
     }
-    @Post()
+    @Post('/new')
     @UsePipes(ValidationPipe)
     createTask(
-        @Body() createTaskDto: CreateTaskDto
+        @Body() createTaskDto: CreateTaskDto,
+        @GetUser() user: User,
     ): Promise<Task> {
-        return this.tasksService.createTask(createTaskDto);
+        return this.tasksService.createTask(createTaskDto, user);
     }
     @Patch('/:id/status')
     updateTaskStatus(

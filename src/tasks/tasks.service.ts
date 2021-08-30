@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
@@ -56,17 +57,17 @@ export class TasksService {
     //     }
     //     return existTask;
     // }
-    async getTasks(filter:GetTasksFilterDto): Promise<TaskPaginateDto> {
-        
-        console.log('list from service',filter)
+    async getTasks(filter: GetTasksFilterDto): Promise<TaskPaginateDto> {
+
+        console.log('list from service', filter)
         return this.taskRepository.getTasks(filter);
     }
 
     // getPaginateTask(){
     //     return this.taskRepository.getTasks()
     // }
-    async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-        return this.taskRepository.createTask(createTaskDto);
+    async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+        return this.taskRepository.createTask(createTaskDto, user);
 
     }
 
