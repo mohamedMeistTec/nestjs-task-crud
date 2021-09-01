@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { use } from 'passport';
 import { User } from 'src/auth/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -43,12 +44,18 @@ export class TasksService {
     //     return tasks;
     // }
 
-    async getTaskById(id: number): Promise<Task> {
-        const existTask = await this.taskRepository.findOne(id)
-        if (!existTask) {
-            throw new NotFoundException('task not found');
+    async getTaskById(id: number, user: User): Promise<Task> {
+        console.log('userrr', user);
+        try {
+            const existTask = await this.taskRepository.findOne({ where: { id, userId: user.id } });
+            if (!existTask) {
+                throw new NotFoundException('task not found');
+            }
+            return existTask;
+        } catch (error) {
+            console.log('error', error);
         }
-        return existTask;
+
     }
     // getTaskById(id: string): Task {
     //     const existTask = this.tasks.find(value => value.id === id);
@@ -57,10 +64,9 @@ export class TasksService {
     //     }
     //     return existTask;
     // }
-    async getTasks(filter: GetTasksFilterDto): Promise<TaskPaginateDto> {
-
-        console.log('list from service', filter)
-        return this.taskRepository.getTasks(filter);
+    async getTasks(filter: GetTasksFilterDto, user: User): Promise<TaskPaginateDto> {
+ 
+        return this.taskRepository.getTasks(filter, user);
     }
 
     // getPaginateTask(){
@@ -71,8 +77,8 @@ export class TasksService {
 
     }
 
-    async deleteTask(id: number): Promise<void> {
-        const result = await this.taskRepository.delete(id);
+    async deleteTask(id: number, user: User): Promise<void> {
+        const result = await this.taskRepository.delete({ id, userId: user.id });
         if (result.affected === 0) {
             throw new NotFoundException('task not found');
         }
@@ -88,10 +94,17 @@ export class TasksService {
     //     this.tasks.push(task);
     //     return task;
     // }
-    async updateTaskStatus(id: number, status: TaskStatus): Promise<Task> {
-        const task = await this.getTaskById(id);
-        task.status = status;
-        return task;
+    async updateTaskStatus(id: number, status: TaskStatus, user: User): Promise<Task> {
+        try {
+            const task = await this.getTaskById(id, user);
+            console.log('task ', task)
+            task.status = status;
+            await task.save();
+            return task;
+        } catch (error) {
+            throw new NotFoundException('error');
+        }
+
     }
     // deleteTask(id: string) {
     //     // // you can use this line or the second line to delte task by id 

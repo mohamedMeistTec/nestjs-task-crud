@@ -20,11 +20,11 @@ export class TaskRepository extends Repository<Task>{
         // delete task.user;
         return task;
     }
-    async getTasks(filter: GetTasksFilterDto): Promise<TaskPaginateDto> {
-
-        console.log('list from repository', filter)
+    async getTasks(filter: GetTasksFilterDto, user: User): Promise<TaskPaginateDto> {
+ 
         const { status, search } = filter;
         const query = this.createQueryBuilder('task');
+        query.where('task.user = :userId', { userId: user.id });
         if (search) {
             query.andWhere('task.title LIKE :search OR task.desc LIKE :search', { search: `%${search}%` })
         }
